@@ -2,10 +2,9 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.gokar abakh.app".replaceAll(" ", ""),
+  appId: "com.gokarabakh.app",
   appName: "Go Karabakh",
   webDir: "dist",
-  bundledWebRuntime: false,
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
@@ -14,9 +13,10 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       backgroundColor: "#202B35",
-      style: "DARK"
+      style: "LIGHT"
     }
   }
 };
 
 export default config;
+
