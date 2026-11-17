@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -45,11 +46,34 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      # Cache downloaded Gradle dependencies between builds.
+      - name: Setup Gradle cache
+        uses: gradle/actions/setup-gradle@v6
+
+      # Retry temporary Maven Central rate-limit failures.
       - name: Build debug APK
         working-directory: android
+        shell: bash
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+
+          for attempt in 1 2 3; do
+            echo "Gradle build attempt $attempt of 3"
+
+            if ./gradlew assembleDebug; then
+              echo "APK build successful!"
+              exit 0
+            fi
+
+            if [ "$attempt" -lt 3 ]; then
+              WAIT_TIME=$((attempt * 20))
+              echo "Build failed. Waiting ${WAIT_TIME} seconds before retry..."
+              sleep "$WAIT_TIME"
+            fi
+          done
+
+          echo "All Gradle build attempts failed."
+          exit 1
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
