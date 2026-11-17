@@ -91,9 +91,7 @@ function App() {
     );
   }
 
-  const activeNavigation = navigation.find(
-    item => item.id === activeTab
-  );
+  
 
   function renderContent() {
     if (activeTab === "home") {
